@@ -1,0 +1,30 @@
+#!/bin/bash
+
+src=$1; shift
+dst=$1; shift
+rest=("$@")
+
+if [[ ! (-e "$src" && -e "$dst") ]]; then
+  echo "usage: ${FUNCNAME[0]} <src> <dst> [<dd_args>...]" 1>&2
+  exit 1
+fi
+
+if [[ -b "$dst" ]]; then
+  lsblk --fs "$dst"
+else
+  file "$dst"
+fi
+
+dd_args=(if="$src" of="$dst" bs=4M conv=fsync oflag=direct status=progress "${rest[@]}")
+
+cat <<EOF
+
+execute the following command:
+  sudo dd ${dd_args[*]}
+
+EOF
+
+echo -n "ok? (yes/NO) "
+if read -r ans && [ "$ans" = "yes" ]; then
+  sudo sudo dd "${dd_args[@]}"
+fi
