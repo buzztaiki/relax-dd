@@ -1,22 +1,33 @@
 #!/bin/bash
 
+file_info() {
+  local path="$1"
+  if [[ -b "$path" ]]; then
+    lsblk --fs "$path"
+  elif [[ -e "$path" ]]; then
+    file "$path"
+  else
+    echo "$path: not exists"
+  fi
+  echo
+}
+
+if [[ $# -lt 2 ]]; then
+  echo "usage: $0 <src> <dst> [<dd_args>...]" 1>&2
+  exit 1
+fi
+
 src=$1; shift
 dst=$1; shift
 rest=("$@")
 
-if [[ ! (-e "$src" && -e "$dst") ]]; then
-  echo "usage: ${FUNCNAME[0]} <src> <dst> [<dd_args>...]" 1>&2
-  exit 1
-fi
+echo "src:"
+file_info "$src"
 
-if [[ -b "$dst" ]]; then
-  lsblk --fs "$dst"
-else
-  file "$dst"
-fi
+echo "dst:"
+file_info "$dst"
 
-dd_args=(if="$src" of="$dst" bs=4M conv=fsync oflag=direct status=progress "${rest[@]}")
-
+dd_args=(if="$src" of="$dst" bs=4M conv=fsync status=progress "${rest[@]}")
 cat <<EOF
 
 execute the following command:
@@ -26,5 +37,5 @@ EOF
 
 echo -n "ok? (yes/NO) "
 if read -r ans && [ "$ans" = "yes" ]; then
-  sudo sudo dd "${dd_args[@]}"
+  exec sudo sudo dd "${dd_args[@]}"
 fi
