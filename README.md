@@ -2,24 +2,31 @@
 
 Relax you and run dd.
 
+## Install
+
+```
+$ go install github.com/buzztaiki/relax-dd
+```
+
 ## Usage
 
 ```console
-$ relax-dd  ~/Downloads/archlinux-2022.03.01-x86_64.iso /dev/sda
+$ sudo go run . ~/Downloads/archlinux-2022.03.01-x86_64.iso /dev/sda
+src:
+/home/you/Downloads/archlinux-2022.03.01-x86_64.iso: ISO 9660 CD-ROM filesystem data (DOS/MBR boot sector) 'ARCH_202203' (bootable)
+
+dst:
 NAME   FSTYPE  FSVER            LABEL       UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
 sda    iso9660 Joliet Extension ARCH_202203 2022-03-01-15-50-40-00
-|-sda1 iso9660 Joliet Extension ARCH_202203 2022-03-01-15-50-40-00
-`-sda2 vfat    FAT16            ARCHISO_EFI 1308-C0B0
+└─sda1 vfat    FAT32            USB         42B5-F2FC                               3.7G     0% /run/media/you/USB
 
-execute the following command:
-  sudo dd if=/home/you/Downloads/archlinux-2022.03.01-x86_64.iso of=/dev/sda bs=4M conv=fsync oflag=direct status=progress
-
+execute the follwing command:
+  /usr/bin/dd if=/home/you/Downloads/archlinux-2022.03.01-x86_64.iso of=/dev/sda bs=4M status=progress conv=fsync oflag=direct
 ok? (yes/NO) yes
-[sudo] password for you:
-843055104 bytes (843 MB, 804 MiB) copied, 156 s, 5.4 MB/s
+838860800 bytes (839 MB, 800 MiB) copied, 126 s, 6.6 MB/s
 201+1 records in
 201+1 records out
-846540800 bytes (847 MB, 807 MiB) copied, 157.142 s, 5.4 MB/s
+846540800 bytes (847 MB, 807 MiB) copied, 127.476 s, 6.6 MB/s
 ```
 
 ## License
