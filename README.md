@@ -5,13 +5,13 @@ Relax you and run dd.
 ## Install
 
 ```
-$ go install github.com/buzztaiki/relax-dd
+$ go install github.com/buzztaiki/relax-dd@latest
 ```
 
 ## Usage
 
 ```console
-$ sudo go run . ~/Downloads/archlinux-2022.03.01-x86_64.iso /dev/sda
+$ sudo relax-dd ~/Downloads/archlinux-2022.03.01-x86_64.iso /dev/sda
 src:
 /home/you/Downloads/archlinux-2022.03.01-x86_64.iso: ISO 9660 CD-ROM filesystem data (DOS/MBR boot sector) 'ARCH_202203' (bootable)
 
