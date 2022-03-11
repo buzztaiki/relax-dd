@@ -12,6 +12,18 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "%s: %v\n", os.Args[0], err)
+		os.Exit(1)
+	}
+}
+
+type config struct {
+	Src, Dst *stat
+	ExtArgs  []string
+}
+
+func parseFlags() *config {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s <src> <dst> [<dd-args>...]\n", os.Args[0])
 		flag.PrintDefaults()
@@ -23,27 +35,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	src := getStat(flag.Arg(0))
-	dst := getStat(flag.Arg(1))
-	extArgs := flag.Args()[2:]
-
-	if err := run(src, dst, extArgs); err != nil {
-		fmt.Fprintf(os.Stderr, "%s: %v\n", os.Args[0], err)
-		os.Exit(1)
-	}
+	return &config{Src: getStat(flag.Arg(0)), Dst: getStat(flag.Arg(1)), ExtArgs: flag.Args()[2:]}
 }
 
-func run(src, dst *stat, extArgs []string) error {
+func run() error {
+	cfg := parseFlags()
+
 	fmt.Println("src:")
-	if err := src.inspect(); err != nil {
-		return fmt.Errorf("inspect error: src=%s: %w", src.Path, err)
+	if err := cfg.Src.inspect(); err != nil {
+		return fmt.Errorf("inspect error: src=%s: %w", cfg.Src.Path, err)
 	}
 	fmt.Println("dst:")
-	if err := dst.inspect(); err != nil {
-		return fmt.Errorf("inspect error: dst=%s: %w", dst.Path, err)
+	if err := cfg.Dst.inspect(); err != nil {
+		return fmt.Errorf("inspect error: dst=%s: %w", cfg.Dst.Path, err)
 	}
 
-	ddArgs := makeDDArgs(src, dst, extArgs)
+	ddArgs := makeDDArgs(cfg.Src, cfg.Dst, cfg.ExtArgs)
 	dd, err := exec.LookPath("dd")
 	if err != nil {
 		return err
